@@ -131,6 +131,9 @@ class MainScreen(Screen):
         
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         clean_line = "".join(c if c.isalnum() else "_" for c in self.current_line)[:30]
+
+        # Create a prefix like '001_', '012_', etc.
+        line_num = "{:03d}".format(self.current_index + 1)
         
         if is_android:
             try:
@@ -140,7 +143,10 @@ class MainScreen(Screen):
                 self.recorder.setAudioEncoder(MediaRecorderAudioEncoder.AAC)
                 self.recorder.setAudioSamplingRate(self.fs)
                 
-                self.audio_path = os.path.join(self.recordings_directory, f"{clean_line}_{timestamp}.m4a")
+                #self.audio_path = os.path.join(self.recordings_directory, f"{clean_line}_{timestamp}.m4a")
+                # Filename now starts with the line number for perfect sequencing
+                filename = f"{line_num}_{self.current_user}_{clean_line}_{timestamp}.m4a"
+                self.audio_path = os.path.join(self.recordings_directory, filename)
                 self.recorder.setOutputFile(self.audio_path)
                 self.recorder.prepare()
                 self.recorder.start()
@@ -192,4 +198,5 @@ class LineApp(App):
         return sm
 
 if __name__ == '__main__':
+
     LineApp().run()
